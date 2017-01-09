@@ -20,9 +20,9 @@ use Illuminate\Http\Request;
 Route::group(['prefix'=>'v1'],function(){
 
     Route::resource('article','ArticleController',[
-        'except' =>['edit','create']
+        'except' =>['create']
     ]);
-
+    //Route::put('article/{id}', 'ArticleController@update');
     Route::post('user',['uses'=>'AuthController@store']);
 
     Route::post('user/signin',['uses'=>'AuthController@signin']);

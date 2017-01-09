@@ -9,10 +9,10 @@ use Auth;
 
 class ArticleController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['index','show']]);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware('auth:api', ['except' => ['index','show']]);
+//    }
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +20,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
+            header('Access-Control-Allow-Origin:*');
         $articles = Article::all();
 
         foreach ($articles as $article)
@@ -43,6 +44,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        header('Access-Control-Allow-Origin:*');
         $validation = Article::validate($request->all());
         if ($validation->fails()) {
             return $validation->errors()->all();
@@ -51,9 +53,8 @@ class ArticleController extends Controller
         $title = $request->input('title');
         $description = $request->input('description');
         $time = $request->input('time');
-        $user_id = Auth::user()->id;
+        //$user_id = Auth::user()->id;
         $image = $request->file('image');
-
 
         $realName = date('Y-m-d-H:i:s')."-".$image->getClientOriginalName();
         $input = md5($realName).time().'.'.$image->getClientOriginalExtension();
@@ -63,9 +64,9 @@ class ArticleController extends Controller
         $article = new Article([
             'title' => $title,
             'description' =>  $description,
-            'time' => Carbon::createFromFormat('YmdHie',$time),
-            'user_id' =>$user_id,
-            'image' =>$destinationPath.''.$input,
+            'time' => $time,
+            'user_id' =>1,
+            'image' =>$input,
         ]);
 
         if ($article->save()) {
@@ -97,6 +98,7 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
+        header('Access-Control-Allow-Origin:*');
         $article = Article::with('users')->where('id', $id)->firstOrFail();
         $article->view_article = [
             'href' => 'v1/article',
@@ -119,6 +121,7 @@ class ArticleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        header('Access-Control-Allow-Origin:*');
         $validation = Article::validate($request->all());
         if ($validation->fails()) {
             return $validation->errors()->all();
@@ -127,16 +130,24 @@ class ArticleController extends Controller
         $title = $request->input('title');
         $description = $request->input('description');
         $time = $request->input('time');
-        $user_id = $request->input('user_id');
+//      $user_id = $request->input('user_id');
+        $image = $request->file('image');
 
+        $realName = date('Y-m-d-H:i:s')."-".$image->getClientOriginalName();
+        $input = md5($realName).time().'.'.$image->getClientOriginalExtension();
+        $destinationPath = public_path('images');
+        $image->move($destinationPath, $input);
         $article = Article::with('users')->findOrFail($id);
 
-        if (!$article->users()->where('users.id', $user_id)->first()) {
-            return response()->json(['msg' => 'user not registered this article, update not successful'], 401);
-        };
+//        if (!$article->users()->where('users.id', $user_id)->first()) {
+//            return response()->json(['msg' => 'user not registered this article, update not successful'], 401);
+//        };
+
         $article->time = Carbon::createFromFormat('YmdHie', $time);
         $article->title = $title;
         $article->description = $description;
+        $article->image = $image;
+        $article->update();
 
         if (!$article->update()) {
             return response()->json(['msg' => 'Error during updating occered'], 404);
@@ -144,16 +155,14 @@ class ArticleController extends Controller
 
         $article->view_article = [
             'href' => 'v1/article/' . $article->id,
-            'method' => 'GET'
+            'method' => 'PUT'
         ];
 
         $response = [
             'msg' => 'article updated',
             '$article' => $article
         ];
-
         return response()->json($response, 200);
-
     }
 
     /**
@@ -164,6 +173,7 @@ class ArticleController extends Controller
      */
     public function destroy($id)
     {
+        header('Access-Control-Allow-Origin:*');
         $article= Article::findOrFail($id);
         $article->delete();
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     protected $fillable = [
-        'title', 'description', 'time', 'image', 'user_id'
+        'title', 'description', 'time', 'image'
     ];
 
     public function users()
@@ -19,7 +19,7 @@ class Article extends Model
     public static $rules = array (
         'title'=>'required|min:3',
         'description'=> 'required|min:5',
-        'time'=> 'required|date_format:YmdHie',
+        'time'=> 'required',
         'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
     );
 
