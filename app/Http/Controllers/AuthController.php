@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -29,54 +30,64 @@ class AuthController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
 
+
         $user = new User([
             'name' => $name,
             'email' => $email,
             'password' => bcrypt($password)
         ]);
+        $response = [
+            'msg' => 'User generated',
+            'user' => $user
+        ];
 
         if ($user->save()) {
-            $user->signin = [
-                'href' => 'v1/user/signin',
-                'method' => 'POST',
-                'params' => 'email, password'
-            ];
-            $response = [
-                'msg' => 'User created successfully',
-                'user' => $user
-            ];
-            return response()->json($response, 201);
+            return $this->_result($response,'1','Success');
+//            $user->signin = [
+//                'href' => 'v1/user/signin',
+//                'method' => 'POST',
+//                'params' => 'email, password'
+//            ];
+//            $response = [
+//                'msg' => 'User created successfully',
+//                'user' => $user
+//            ];
+//            return response()->json($response, 201);
         }
 
         $response = [
             'msg' => 'An error occurred'
         ];
 
-        return response()->json($response, 404);
+        return $this->_result($response,'0','fail');
     }
 
     public function signin(Request $request)
     {
         $this->validate($request, [
-            'email' => 'required|email',
+            'email' => 'required',
             'password' => 'required'
         ]);
-
         $email = $request->input('email');
-        //$password = $request->input('password');
-        //$api_token= $request->
         $myID =  DB::table('users')->where('email', $email)->pluck('id');
+
+        $data = $request->all();
+
         $user = [
             'email' => $email,
             'userId'=>$myID,
-//          'password' => $password
         ];
-
         $response = [
             'msg' => 'User signed in',
             'user' => $user
         ];
 
-        return response()->json($response, 200);
+        if (Auth::attempt(array('email' => $data['email'], 'password' => $data['password'])))
+        {
+            return $this->_result($response,'1','Success');
+        }
+        else{
+            return $this->_result('fail','0','fail');
+        }
     }
 }

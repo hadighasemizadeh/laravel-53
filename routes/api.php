@@ -22,6 +22,12 @@ Route::group(['prefix'=>'v1'],function(){
     Route::resource('article','ArticleController',[
         'except' =>['create']
     ]);
+
+    Route::resource('team','TeamController',[
+        'except' =>['create']
+    ]);
+
+
     //Route::put('article/{id}', 'ArticleController@update');
     Route::post('user',['uses'=>'AuthController@store']);
 

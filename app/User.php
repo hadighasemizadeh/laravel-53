@@ -25,11 +25,15 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token','api_token',
     ];
 
     public function articles()
     {
         return $this->belongsToMany('App\Article');
+    }
+    public function team()
+    {
+        return $this->belongsTo('App\Teams', 'team_id');
     }
 }
