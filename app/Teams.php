@@ -14,6 +14,6 @@ class Teams extends Model
 
     public function owners()
     {
-        return $this->belongsToMany('App\User', 'team_owners', 'team_id', 'user_id');
+        return $this->belongsTo('App\User', 'teams');
     }
 }

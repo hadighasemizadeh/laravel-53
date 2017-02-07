@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,8 @@ class AuthController extends Controller
         $rules = array(
             'name' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:5'
+            'password' => 'required|min:5',
+            'isManager'=>'required'
         );
 
         $validator = Validator::make($request->all(), $rules);

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Teams;
 use Validator;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
+use App\Http\Requests;
 
 class TeamController extends Controller
 {
@@ -34,7 +37,7 @@ class TeamController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-//        print_r($data);
+        print_r($data);
 
         $validator = Validator::make($data, [
             'name' => 'required|max:10',
@@ -45,7 +48,6 @@ class TeamController extends Controller
             'owner_id' => 'Required owner id field',
 
         ]);
-
         if($validator->fails())
         {
             $errors = $validator->errors()->all();
@@ -56,6 +58,18 @@ class TeamController extends Controller
             'name' => $data['name'],
             'owner_id' => $data['owner_id'],
         ]);
+//        $roles = DB::table('roles')->pluck('title');
+        // get id of creator and fill the user table
+        // $user = User::with('users')->where('id', owner_id)->firstOrFail();
+        // Insert user into the created family
+
+//        $users = User::whereId($data['owner_id'])->first();
+//        $users->team_id = $team['id'];
+//        $team->owners()->associate($data['owner_id']);
+
+//        DB::table('teams')->where('name', $data['name'])-> insert(
+//            ['name' => $data['name'], 'owner_id' => $data['owner_id']]);
+        DB::table('teams')->where('name', $data['name'])->update(['owner_id' => $data['owner_id']]);
 
         return $this->_result($team);
     }

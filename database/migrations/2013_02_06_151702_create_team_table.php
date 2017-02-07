@@ -16,7 +16,6 @@ class CreateTeamTable extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->string('owner_id')->nullable();
-
             $table->timestamps();
         });
     }

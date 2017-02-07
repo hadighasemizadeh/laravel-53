@@ -20,7 +20,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-            header('Access-Control-Allow-Origin:*');
+        header('Access-Control-Allow-Origin:*');
         $articles = Article::all();
 
         foreach ($articles as $article)

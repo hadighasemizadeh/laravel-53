@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','isManager','team_id'
     ];
 
     /**
@@ -34,6 +34,6 @@ class User extends Authenticatable
     }
     public function team()
     {
-        return $this->belongsTo('App\Teams', 'team_id');
+        return $this->belongsTo('App\Teams');
     }
 }
